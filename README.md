@@ -2,6 +2,7 @@
 2019 语音识别
 
 [论文]
+
 一、  Listen, Attend and Spell
 代码如下：
 
@@ -15,7 +16,7 @@
     https://blog.csdn.net/chinatelecom08/article/details/85048019
 
 [数据集]
-一、
+
 1、 CSTRVCTK Corpus：   http://homepages.inf.ed.ac.uk/jyamagis/page3/page58/page58.html
 
 2、 LibriSpeech ASR corpus：  http://www.openslr.org/12/
@@ -26,7 +27,6 @@
 
 
 [参考]
-一、
 
 1、 https://www.cnblogs.com/aibabel/p/11012794.html
 
