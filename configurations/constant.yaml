@@ -1,0 +1,9 @@
+# 数据源类型 en/cn
+datasource_type: en
+# 路径
+path:
+    # 英文 LibriSpeech 数据集路径
+    en_libri_speech_path: ../datasets/LibriSpeech
+    # 中文 LifeSpeech 数据集路径
+    cn_life_speech_path: ../datasets/LifeSpeech
+
