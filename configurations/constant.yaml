@@ -1,9 +1,46 @@
 # 数据源类型 en/cn
 datasource_type: en
+
 # 路径
 path:
     # 英文 LibriSpeech 数据集路径
-    en_libri_speech_path: ../datasets/LibriSpeech
-    # 中文 LifeSpeech 数据集路径
-    cn_life_speech_path: ../datasets/LifeSpeech
+    en_libri_speech_path: /home/wjunneng/Ubuntu/2019-Speech-Recognition/datasets/LibriSpeech/dev-clean
 
+    # 中文 LifeSpeech 数据集路径
+    cn_life_speech_path: ./datasets/LifeSpeech
+
+    # 模型保存路径
+    model_path: ./models/bilstm
+
+# 对于 LibriSpeech 数据集路径
+en_libri_speech_path:
+    # 选中的txt数目
+    how_many: 2
+
+# token
+token:
+    PAD: 0
+    UNK: 1
+    BOS: 2
+    EOS: 3
+    SPACE: 4
+    PAD_FLAG: '<pad>'
+    UNK_FLAG: '<unk>'
+    BOS_FLAG: '<bos>'
+    EOS_FLAG: '<eos>'
+    SPACE_FLAG: '<space>'
+    # 组合
+    flag_list: ['<pad>', '<unk>', '<bos>', '<eos>', '<space>']
+
+# 模型参数
+num_layers_encoder: 2
+num_layers_decoder: 2
+rnn_size_encoder: 450
+rnn_size_decoder: 450
+embedding_dim: 10
+batch_size: 4
+epochs: 10
+use_cyclic_lr: True
+learning_rate: 0.00001
+max_lr: 0.00003
+learning_rate_decay_steps: 700
