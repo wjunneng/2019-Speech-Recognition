@@ -43,17 +43,17 @@ class Run(object):
                               num_layers_decoder=self.constant["num_layers_decoder"],
                               rnn_size_encoder=self.constant["rnn_size_encoder"],
                               rnn_size_decoder=self.constant["rnn_size_decoder"],
-                              mode=self.constant["mode"],
+                              mode="INFER",
                               embedding_dim=self.constant["embedding_dim"],
-                              batch_size=self.constant["batch_size"],
-                              beam_width=self.constant["beam_width"], )
+                              batch_size=1,
+                              beam_width=5)
 
         sr.build_graph()
-        preds = sr.infer(data.audios[0:100:20], restore_path=self.model_path)
+        preds = sr.infer(data.audios[0:10:2], restore_path=self.model_path)
 
         preds_converted = data_util.Util().preds2txt(preds, data.ind2char, beam=True)
 
-        data_util.Util().print_samples(preds_converted, data.txts_splitted[0:100:20])
+        data_util.Util().print_samples(preds_converted, data.txts_splitted[0:10:2])
 
 
 if __name__ == '__main__':

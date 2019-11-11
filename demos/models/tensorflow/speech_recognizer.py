@@ -110,38 +110,25 @@ class SpeechRecognizer:
         print('Graph built.')
 
     def add_placeholders(self):
-        self.audios = tf.placeholder(tf.float32,
-                                     shape=[None, None, 494])
-        self.audio_sequence_lengths = tf.placeholder(tf.int32,
-                                                     shape=[None],
-                                                     name='sequence_length_source')
-
-        self.char_ids = tf.placeholder(tf.int32,
-                                       shape=[None, None],
-                                       name='ids_target')
-
-        self.char_sequence_lengths = tf.placeholder(tf.int32,
-                                                    shape=[None],
-                                                    name='sequence_length_target')
-        self.maximum_iterations = tf.reduce_max(self.char_sequence_lengths,
-                                                name='max_dec_len')
+        self.audios = tf.placeholder(tf.float32, shape=[None, None, 494])
+        self.audio_sequence_lengths = tf.placeholder(tf.int32, shape=[None], name='sequence_length_source')
+        self.char_ids = tf.placeholder(tf.int32, shape=[None, None], name='ids_target')
+        self.char_sequence_lengths = tf.placeholder(tf.int32, shape=[None], name='sequence_length_target')
+        self.maximum_iterations = tf.reduce_max(self.char_sequence_lengths, name='max_dec_len')
 
     def create_word_embedding(self, embed_name, vocab_size, embed_dim):
         """
             Creates embedding matrix in given shape - [vocab_size, embed_dim].
         """
-        embedding = tf.get_variable(embed_name,
-                                    shape=[vocab_size + 1, embed_dim],
-                                    dtype=tf.float32)
+        embedding = tf.get_variable(embed_name, shape=[vocab_size + 1, embed_dim], dtype=tf.float32)
+
         return embedding
 
     def add_embeddings(self):
         """
             Creates the embedding matrix.
         """
-        self.embedding = self.create_word_embedding('embedding',
-                                                    self.vocab_size,
-                                                    self.embedding_dim)
+        self.embedding = self.create_word_embedding('embedding', self.vocab_size, self.embedding_dim)
 
     def add_lookup_ops(self):
         """
