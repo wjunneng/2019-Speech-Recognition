@@ -1,21 +1,30 @@
 # 数据源类型 en/cn
-datasource_type: en
+datasource_type: cn
 
 # 路径
 path:
-    # 英文 LibriSpeech 数据集路径
-    en_libri_speech_path: /home/wjunneng/Ubuntu/2019-Speech-Recognition/datasets/LibriSpeech/dev-clean
-
-    # 中文 LifeSpeech 数据集路径
-    cn_life_speech_path: ./datasets/LifeSpeech
-
     # 模型保存路径
     model_path: ./models/bilstm
 
-# 对于 LibriSpeech 数据集路径
-en_libri_speech_path:
+# 英文
+en:
+    # 英文 LibriSpeech 数据集路径
+    path: /home/wjunneng/Ubuntu/2019-Speech-Recognition/datasets/LibriSpeech/dev-clean
+    # wav路径与label之间的分割符
+    audio_label_splitter: ' '
     # 选中的txt数目
     how_many: 2
+
+
+# 中文
+cn:
+    # 中文 LifeSpeech 数据集路径
+    path: /home/wjunneng/Ubuntu/2019-Speech-Recognition/datasets/LifeSpeech
+    # wav路径与label之间的分割符
+    audio_label_splitter: ','
+    # label文件路径
+    audio_label_path: dev.txt
+
 
 # token
 token:

@@ -16,12 +16,11 @@ class Util(object):
         self.constant = Constant().get_configuration()
 
         if self.constant['datasource_type'] == 'en':
-            dir_path = self.constant['path']['en_libri_speech_path']
+            dir_path = self.constant['en']['path']
         else:
-            dir_path = self.constant['path']['cn_life_speech_path']
+            dir_path = self.constant['cn']['path']
 
-        self.txts, self.audios, self.audio_paths = self.load_data(dir_path=dir_path,
-                                                                  how_many=self.constant['en_libri_speech_path'][
+        self.txts, self.audios, self.audio_paths = self.load_data(dir_path=dir_path, how_many=self.constant['en'][
                                                                       'how_many'])
         self.txts_splitted, self.unique_chars, self.char2ind, self.ind2char, self.txts_converted = self.process_txts(
             txts=self.txts)
