@@ -140,20 +140,20 @@ class Util(object):
 
         return char2ind, ind2char
 
-    def convert_char_to_index(self, txt, char2ind, bos=True, eos=True):
+    def convert_char_to_index(self, txt, char2ind, sos=True, eos=True):
         """
-        添加 bos/eos
+        添加 sos/eos
         :param txt:
         :param char2ind:
-        :param bos:
+        :param sos:
         :param eos:
         :return:
         """
         txt_to_inds = [char2ind[char] for char in txt]
-        if bos is True:
-            txt_to_inds.insert(0, self.constant['token']['BOS'])
+        if sos is True:
+            txt_to_inds.insert(0, self.constant['token']['SOS'])
         if eos is True:
-            txt_to_inds.append(self.constant['token']['BOS'])
+            txt_to_inds.append(self.constant['token']['EOS'])
 
         return txt_to_inds
 
@@ -165,7 +165,7 @@ class Util(object):
         """
         txts_splitted, unique_chars = self.split_txts(txts=txts)
         char2ind, ind2char = self.create_lookup_dicts(unique_chars=unique_chars)
-        # 字符序列转索引序列, 同时添加<bos>/<eos>
+        # 字符序列转索引序列, 同时添加<sos>/<eos>
         txts_converted = [self.convert_char_to_index(txt=txt, char2ind=char2ind) for txt in txts_splitted]
 
         return txts_splitted, unique_chars, char2ind, ind2char, txts_converted
@@ -206,7 +206,7 @@ class Util(object):
 
     def preds2txt(self, preds, ind2char, beam=False):
         """
-        预测结果转文字序列, 同时, 去除 <bos> 和 <eos> 字符.
+        预测结果转文字序列, 同时, 去除 <sos> 和 <eos> 字符.
         :param preds:
         :param ind2char:
         :param beam:

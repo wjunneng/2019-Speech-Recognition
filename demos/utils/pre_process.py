@@ -13,7 +13,7 @@ class PreProcess(object):
     def __init__(self):
         configuration = Constant().get_configuration()
 
-        if configuration['datasource_type'] is 'cn':
+        if configuration['datasource_type'] == 'cn':
             # cn or en
             self.datasource_type = configuration['datasource_type']
             # dev/train/test文件夹保存的路径 数据集的路径
@@ -22,93 +22,89 @@ class PreProcess(object):
             self.audio_label_path = configuration[self.datasource_type]['audio_label_path']
             # audio路径与label之间的分隔符
             self.audio_label_splitter = configuration[self.datasource_type]['audio_label_splitter']
-            self.get_data()
-        else:
-            return None
+            # <sos>
+            self.sos = configuration['token']['SOS']
+            # <sos> flag
+            self.sos_flag = configuration['token']['SOS_FLAG']
+            # <eos>
+            self.eos = configuration['token']['EOS']
+            # <eos> flag
+            self.eos_flag = configuration['token']['EOS_FLAG']
 
-    def get_data(self):
+            # 字典
+            self.vocab_to_index = {self.sos_flag: self.sos, self.eos_flag: self.sos}
+            # 反字典
+            self.index_to_vocab = {}
+
+            # token_index 和 wav文件的绝对路径
+            self.samples = []
+            # {'train': samples, 'dev': samples, 'test': test}
+            self.data = {}
+
+    def get_data(self, type):
+        """
+        获取数据
+        :return:
+        """
         # key保存audio路径, value保存label
         audio_label = {}
+
         # 遍历文件
-        with codecs.open(self.audio_label_path) as file:
+        with codecs.open(os.path.join(self.path, self.audio_label_path)) as file:
             audio_label_list = file.read().split(self.audio_label_splitter)
             audio_label[audio_label_list[0]] = self.audio_label_splitter.join(audio_label_list[1:])
 
         # 遍历train dev test文件夹
-        for type in ['train', 'dev', 'test']:
-            floder = os.path.join(self.path, self.audio_label_path)
-            assert os.path.isdir(floder) is True
 
-            for d in os.listdir(floder):
-                if os.path.isdir(os.path.join(floder, d)):
+        floder = os.path.join(self.path, self.audio_label_path, type)
+        assert os.path.isdir(floder) is True
 
-        def
+        for d in tqdm(floder):
+            dirs = os.path.join(floder, d)
+            if os.path.isdir(dirs):
+                files = [file for file in os.listdir(dirs) if file.endswith('.wav')]
 
-def get_data(split):
-    print('getting {} data...'.format(split))
+                for file in files:
+                    file_path = os.path.join(dirs, file)
+                    self.add_token(audio_label, file, file_path)
 
-    global VOCAB
+            elif os.path.isfile(dirs) and dirs.endswith('.wav'):
+                self.add_token(audio_label, d, dirs)
 
-    with open(tran_file, 'r', encoding='utf-8') as file:
-        lines = file.readlines()
+        self.data[type] = self.samples
 
-    tran_dict = dict()
-    for line in lines:
-        tokens = line.split()
-        key = tokens[0]
-        trn = ''.join(tokens[1:])
-        tran_dict[key] = trn
+    def add_token(self, audio_label, file, file_path):
+        """
+        输入文件
+        :param audio_label:
+        :param file:
+        :return:
+        """
+        token_to_index = []
 
-    samples = []
+        # 文件名
+        key = file.split('.')[0]
+        if key in audio_label:
+            value = audio_label[key]
+            value = list(value.strip()) + [self.eos]
 
-    folder = os.path.join(wav_folder, split)
-    ensure_folder(folder)
-    dirs = [os.path.join(folder, d) for d in os.listdir(folder) if os.path.isdir(os.path.join(folder, d))]
-    for dir in tqdm(dirs):
-        files = [f for f in os.listdir(dir) if f.endswith('.wav')]
+            # 遍历tokens
+            for token in value:
+                if token not in self.vocab_to_index.keys():
+                    self.vocab_to_index[token] = len(self.vocab_to_index)
 
-        for f in files:
-            wave = os.path.join(dir, f)
+                token_to_index.append(self.vocab_to_index[token])
 
-            key = f.split('.')[0]
-            if key in tran_dict:
-                trn = tran_dict[key]
-                trn = list(trn.strip()) + ['<eos>']
-
-                for token in trn:
-                    build_vocab(token)
-
-                trn = [VOCAB[token] for token in trn]
-
-                samples.append({'trn': trn, 'wave': wave})
-
-    print('split: {}, num_files: {}'.format(split, len(samples)))
-    return samples
+        self.samples.append({'token_index': token_to_index, 'wav_path': file_path})
 
 
-def build_vocab(token):
-    global VOCAB, IVOCAB
-    if not token in VOCAB:
-        next_index = len(VOCAB)
-        VOCAB[token] = next_index
-        IVOCAB[next_index] = token
+if __name__ == '__main__':
+    pre_process = PreProcess()
+    for type in ['train', 'test', 'dev']:
+        pre_process.get_data(type)
 
+        print('%s' % type)
+        print(len(pre_process.data))
 
-if __name__ == "__main__":
-    VOCAB = {'<sos>': 0, '<eos>': 1}
-    IVOCAB = {0: '<sos>', 1: '<eos>'}
-
-    data = dict()
-    data['VOCAB'] = VOCAB
-    data['IVOCAB'] = IVOCAB
-    data['train'] = get_data('train')
-    data['dev'] = get_data('dev')
-    data['test'] = get_data('test')
-
-    with open(pickle_file, 'wb') as file:
-        pickle.dump(data, file)
-
-    print('num_train: ' + str(len(data['train'])))
-    print('num_dev: ' + str(len(data['dev'])))
-    print('num_test: ' + str(len(data['test'])))
-    print('vocab_size: ' + str(len(data['VOCAB'])))
+    data = pre_process.data
+    print('end!')

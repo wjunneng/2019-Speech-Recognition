@@ -31,7 +31,7 @@ class SpeechRecognizer:
                  beam_width=10,
                  epochs=20,
                  eos="<eos>",
-                 bos="<bos>",
+                 sos="<sos>",
                  pad='<pad>',
                  clip=5,
                  inference_targets=False,
@@ -64,7 +64,7 @@ class SpeechRecognizer:
             epochs: Integer. Number of times the training is conducted
                     on the whole training data.
             eos: EndOfSentence tag.
-            bos: beginOfSentence tag.
+            sos: beginOfSentence tag.
             pad: Padding tag.
             clip: Value to clip the gradients to in training process.
             inference_targets:
@@ -92,7 +92,7 @@ class SpeechRecognizer:
         self.batch_size = batch_size
         self.beam_width = beam_width
         self.eos = eos
-        self.bos = bos
+        self.sos = sos
         self.clip = clip
         self.pad = pad
         self.epochs = epochs
@@ -332,7 +332,7 @@ class SpeechRecognizer:
 
     def build_decoder(self, encoder_outputs, encoder_state):
 
-        bos_id_2 = tf.cast(self.char2ind[self.bos], tf.int32)
+        sos_id_2 = tf.cast(self.char2ind[self.sos], tf.int32)
         eos_id_2 = tf.cast(self.char2ind[self.eos], tf.int32)
         self.output_layer = Dense(self.vocab_size, name='output_projection')
 
@@ -376,7 +376,7 @@ class SpeechRecognizer:
 
             # Inference
             else:
-                start_tokens = tf.fill([self.batch_size], bos_id_2)
+                start_tokens = tf.fill([self.batch_size], sos_id_2)
                 end_token = eos_id_2
 
                 # Beam search

@@ -30,16 +30,16 @@ cn:
 token:
     PAD: 0
     UNK: 1
-    BOS: 2
+    SOS: 2
     EOS: 3
     SPACE: 4
     PAD_FLAG: '<pad>'
     UNK_FLAG: '<unk>'
-    BOS_FLAG: '<bos>'
+    SOS_FLAG: '<sos>'
     EOS_FLAG: '<eos>'
     SPACE_FLAG: '<space>'
     # 组合
-    flag_list: ['<pad>', '<unk>', '<bos>', '<eos>', '<space>']
+    flag_list: ['<pad>', '<unk>', '<sos>', '<eos>', '<space>']
 
 # 模型参数
 num_layers_encoder: 2
