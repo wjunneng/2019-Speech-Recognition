@@ -15,13 +15,10 @@ class Util(object):
     def __init__(self):
         self.constant = Constant().get_configuration()
 
-        if self.constant['datasource_type'] == 'en':
-            dir_path = self.constant['en']['path']
-        else:
-            dir_path = self.constant['cn']['path']
-
-        self.txts, self.audios, self.audio_paths = self.load_data(dir_path=dir_path, how_many=self.constant['en'][
-                                                                      'how_many'])
+        self.datasource_type = self.constant['datasource_type']
+        self.txts, self.audios, self.audio_paths = self.load_data(
+            dir_path=self.constant[self.datasource_type]['path'], how_many=self.constant[self.datasource_type][
+                'how_many'])
         self.txts_splitted, self.unique_chars, self.char2ind, self.ind2char, self.txts_converted = self.process_txts(
             txts=self.txts)
 
@@ -255,27 +252,6 @@ class Util(object):
             print('Accuracy score:', acc_score, '\n\n')
 
         print('Mean acc score:', np.mean(accs))
-
-    def write_pkl(self, path, data):
-        """
-        保存pkl模型
-        :param path:
-        :param data:
-        :return:
-        """
-        with open(path, 'wb') as file:
-            pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
-
-    def load_pkl(self, path):
-        """
-        加载pkl模型
-        :param path:
-        :return:
-        """
-        with open(path, 'rb') as file:
-            data = pickle.load(file)
-
-        return data
 
 
 if __name__ == "__main__":
