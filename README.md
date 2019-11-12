@@ -58,7 +58,7 @@
                 train/
                 dev/
                 test/
-        aishell.pickle
+            audio_index.pkl
     </pre>
     
 [参考]

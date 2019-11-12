@@ -50,8 +50,11 @@ class PreProcess(object):
                 audio_label_list = line.split(self.audio_label_splitter)
                 audio_label[audio_label_list[0]] = self.audio_label_splitter.join(audio_label_list[1:]).strip('\n')
 
-        # 遍历train dev test文件夹
-        floder = os.path.join(self.path, type)
+        if self.datasource_type == 'aishell_speech':
+            # 遍历train dev test文件夹
+            floder = os.path.join(self.path, 'wav', type)
+        else:
+            floder = os.path.join(self.path, type)
         assert (os.path.isdir(floder) is True)
 
         for d in tqdm(os.listdir(floder)):

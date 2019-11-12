@@ -1,5 +1,5 @@
 # 数据源类型  aishell_speech/libri_speech/life_speech
-datasource_type: life_speech
+datasource_type: aishell_speech
 # 模型类型
 model_type: seq2seq
 
@@ -29,6 +29,19 @@ life_speech:
             audio_label_path: dev.txt
             # audio_index_pkl_path
             audio_index_pkl_path: audio_index.pkl
+
+# 中文 aishellSpeech
+aishell_speech:
+              # 数据集路径
+              path: /home/wjunneng/Ubuntu/Speech-Recognition/data/data_aishell
+              # vocab size
+              vocab_size: 4336
+              # audio_index_pkl_path
+              audio_index_pkl_path: audio_index.pkl
+              # label文件路径
+              audio_label_path: transcript/aishell_transcript_v0.8.txt
+              # wav路径与label之间的分隔符
+              audio_label_splitter: ' '
 
 # token
 token:
@@ -122,6 +135,10 @@ seq2seq:
         l2: 1e-5
         # checkpoint
         checkpoint: None
+
+        # ############################ other
+        # how many times to print
+        print_freq: 100
 
 
 
