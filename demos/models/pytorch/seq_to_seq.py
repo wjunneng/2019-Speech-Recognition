@@ -12,6 +12,8 @@ from demos.models.pytorch.seq2seq.decoder import Decoder
 from demos.models.pytorch.seq2seq.seq2seq import Seq2Seq
 from demos.models.pytorch.seq2seq.optimizer import LasOptimizer
 
+from configurations.constant import Constant
+
 
 class SeqToSeq(object):
     def __init__(self,
@@ -147,7 +149,7 @@ class SeqToSeq(object):
         epochs_since_improvement = 0
 
         # Initialize / load checkpoint
-        if self.checkpoint is None:
+        if self.checkpoint == 'None':
             encoder = Encoder(input_size=self.einput * self.LFR_m,
                               hidden_size=self.ehidden,
                               num_layers=self.elayer,
@@ -278,3 +280,41 @@ class SeqToSeq(object):
         logger.info('\nValidation Loss {loss.val:.4f} ({loss.avg:.4f})\n'.format(loss=losses))
 
         return losses.avg
+
+
+if __name__ == '__main__':
+    configuration = Constant().get_configuration()
+    project_path = Constant().get_project_path()
+    datasource_type = configuration['datasource_type']
+    model_type = configuration['model_type']
+
+    SeqToSeq(LFR_m=configuration[model_type]['LFR_m'],
+             LFR_n=configuration[model_type]['LFR_n'],
+             einput=configuration[model_type]['einput'],
+             ehidden=configuration[model_type]['ehidden'],
+             elayer=configuration[model_type]['elayer'],
+             edropout=configuration[model_type]['edropout'],
+             ebidirectional=configuration[model_type]['ebidirectional'],
+             etype=configuration[model_type]['etype'],
+             atype=configuration[model_type]['atype'],
+             dembed=configuration[model_type]['dembed'],
+             dhidden=configuration[model_type]['dhidden'],
+             dlayer=configuration[model_type]['dlayer'],
+             epochs=configuration[model_type]['epochs'],
+             half_lr=configuration[model_type]['half_lr'],
+             early_stop=configuration[model_type]['early_stop'],
+             max_norm=configuration[model_type]['max_norm'],
+             batch_size=configuration[model_type]['batch_size'],
+             maxlen_in=configuration[model_type]['maxlen_in'],
+             maxlen_out=configuration[model_type]['maxlen_out'],
+             num_workers=configuration[model_type]['num_workers'],
+             optimizer=configuration[model_type]['optimizer'],
+             lr=configuration[model_type]['lr'],
+             momentum=configuration[model_type]['momentum'],
+             l2=configuration[model_type]['l2'],
+             checkpoint=configuration[model_type]['checkpoint'],
+             print_freq=configuration[model_type]['print_freq'],
+             vocab_size=configuration[datasource_type]['vocab_size'],
+             pad_id=configuration['token']['PAD'],
+             sos_id=configuration['token']['SOS'],
+             eos_id=configuration['token']['EOS']).train_net()

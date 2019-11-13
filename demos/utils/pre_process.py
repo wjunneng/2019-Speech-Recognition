@@ -17,6 +17,15 @@ class PreProcess(object):
         self.audio_label_path = configuration[self.datasource_type]['audio_label_path']
         # audio路径与label之间的分隔符
         self.audio_label_splitter = configuration[self.datasource_type]['audio_label_splitter']
+
+        # <pad>
+        self.pad = configuration['token']['PAD']
+        # <pad> flag
+        self.pad_flag = configuration['token']['PAD_FLAG']
+        # <unk>
+        self.unk = configuration['token']['UNK']
+        # <unk> flag
+        self.unk_flag = configuration['token']['UNK_FLAG']
         # <sos>
         self.sos = configuration['token']['SOS']
         # <sos> flag
@@ -25,9 +34,17 @@ class PreProcess(object):
         self.eos = configuration['token']['EOS']
         # <eos> flag
         self.eos_flag = configuration['token']['EOS_FLAG']
+        # <space>
+        self.space = configuration['token']['SPACE']
+        # <space> flag
+        self.space_flag = configuration['token']['SPACE_FLAG']
 
         # 字典
-        self.vocab_to_index = {self.sos_flag: self.sos, self.eos_flag: self.sos}
+        self.vocab_to_index = {self.pad_flag: self.pad,
+                               self.unk_flag: self.unk,
+                               self.sos_flag: self.sos,
+                               self.eos_flag: self.eos,
+                               self.space_flag: self.space}
         # 反字典
         self.index_to_vocab = {}
 
@@ -57,6 +74,7 @@ class PreProcess(object):
             floder = os.path.join(self.path, type)
         assert (os.path.isdir(floder) is True)
 
+        print('len:', len(os.listdir((floder))))
         for d in tqdm(os.listdir(floder)):
             dirs = os.path.join(floder, d)
             if os.path.isdir(dirs):
@@ -70,6 +88,7 @@ class PreProcess(object):
                 self.add_token(audio_label, d, dirs)
 
         self.data[type] = self.samples
+        self.samples = []
 
     def add_token(self, audio_label, file, file_path):
         """
@@ -81,7 +100,8 @@ class PreProcess(object):
         token_to_index = []
 
         # 文件名
-        if file in audio_label.keys():
+        file = file.split('.')[0]
+        if file in audio_label:
             value = audio_label[file]
             # 添加<eos>标记
             value = list(value.strip()) + [self.eos_flag]
@@ -93,7 +113,7 @@ class PreProcess(object):
 
                 token_to_index.append(self.vocab_to_index[token])
 
-        self.samples.append({'token_index': token_to_index, 'wav_path': file_path})
+            self.samples.append({'token_index': token_to_index, 'wav_path': file_path})
 
 
 if __name__ == '__main__':

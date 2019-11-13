@@ -54,7 +54,7 @@ class Decoder(nn.Module):
         """
         n_batch = len(xs)
         max_len = max(x.size(0) for x in xs)
-        pad = xs[0].new(n_batch, max_len, *xs[0].size()[1:].fill_(pad_value))
+        pad = xs[0].new(n_batch, max_len, *xs[0].size()[1:]).fill_(pad_value)
         for i in range(n_batch):
             pad[i, :xs[i].size(0)] = xs[i]
 
@@ -76,16 +76,17 @@ class Decoder(nn.Module):
         """
         # ############## Get Input and Output
         # TODO: need to make more smart way
-        # parse padded ys
-        ys = [y[y != self.pad_id] for y in padded_input]
-        # prepart input and output word sequences with sos/eos IDs
+        ys = [y[y != self.pad_id] for y in padded_input]  # parse padded ys
+        # prepare input and output word sequences with sos/eos IDs
         eos = ys[0].new([self.eos_id])
         sos = ys[0].new([self.sos_id])
         ys_in = [torch.cat([sos, y], dim=0) for y in ys]
         ys_out = [torch.cat([y, eos], dim=0) for y in ys]
-        # padding for ys with 0
+        # padding for ys with -1
+        # pys: utt x olen
         ys_in_pad = Decoder.pad_list(ys_in, self.eos_id)
         ys_out_pad = Decoder.pad_list(ys_out, self.pad_id)
+        # print("ys_in_pad", ys_in_pad.size())
         assert ys_in_pad.size() == ys_out_pad.size()
         batch_size = ys_in_pad.size(0)
         output_length = ys_in_pad.size(1)

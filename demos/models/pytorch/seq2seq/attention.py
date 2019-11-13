@@ -26,13 +26,12 @@ class DotProductAttention(nn.Module):
             attention_distribution: N x To x Ti
         """
         batch_size = queries.size(0)
-        input_lengths = queries.size(1)
+        input_lengths = values.size(1)
         hidden_size = queries.size(2)
         # (N, To, H) * (N, H, Ti) -> (N, To, Ti)
         attention_scores = torch.bmm(queries, values.transpose(1, 2))
         attention_distribution = F.softmax(
-            attention_scores.view(-1, input_lengths), dim=1
-        ).view(batch_size, -1, input_lengths)
+            attention_scores.view(-1, input_lengths), dim=1).view(batch_size, -1, input_lengths)
         # (N, To, Ti) * (N, Ti, H) -> (N, To, H)
         attention_output = torch.bmm(attention_distribution, values)
         # # concat -> (N, To, 2*H)

@@ -12,13 +12,13 @@ from configurations.constant import Constant
 class AiShellDataset(Dataset):
     def __init__(self, split):
         self.configuration = Constant().get_configuration()
-        self.project_path = Constant().get_project_path()
         self.datasource_type = self.configuration['datasource_type']
-        self.audio_index_pkl_path = os.path.join(self.project_path,
+        self.model_type = self.configuration['model_type']
+        self.audio_index_pkl_path = os.path.join(self.configuration[self.datasource_type]['path'],
                                                  self.configuration[self.datasource_type]['audio_index_pkl_path'])
-        self.input_dim = self.configuration['input_dim']
-        self.LFR_m = self.configuration['LFR_m']
-        self.LFR_n = self.configuration['LFR_n']
+        self.input_dim = self.configuration[self.datasource_type]['input_dim']
+        self.LFR_m = self.configuration[self.model_type]['LFR_m']
+        self.LFR_n = self.configuration[self.model_type]['LFR_n']
 
         with open(self.audio_index_pkl_path, 'rb') as file:
             data = pickle.load(file)

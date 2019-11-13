@@ -27,7 +27,7 @@ class Seq2Seq(nn.Module):
         :return:
         """
         encoder_padded_outputs, _ = self.encoder(padding_input=padded_input, input_lengths=input_lengths)
-        loss = self.decoder(padded_target=padded_target, encoder_padded_outputs=encoder_padded_outputs)
+        loss = self.decoder(padded_input=padded_target, encoder_padded_outputs=encoder_padded_outputs)
 
         return loss
 

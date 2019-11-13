@@ -43,6 +43,9 @@ aishell_speech:
               # wav路径与label之间的分隔符
               audio_label_splitter: ' '
 
+              # 嵌入的维度
+              input_dim: 80
+
 # token
 token:
       PAD: 0
@@ -126,15 +129,15 @@ seq2seq:
 
         # ############################ optimizer
         # Optimizer (support sgd and adam now) [sgd, adam]
-        optimizer: adam
+        optimizer: 'adam'
         # Init learning rate
-        lr: 1e-3
+        lr: 0.001
         # Momentum for optimizer
         momentum: 0.0
         # weight decay (L2 penalty)
-        l2: 1e-5
+        l2: 0.00001
         # checkpoint
-        checkpoint: None
+        checkpoint: 'None'
 
         # ############################ other
         # how many times to print
