@@ -46,7 +46,7 @@ class PreProcess(object):
                                self.eos_flag: self.eos,
                                self.space_flag: self.space}
         # 反字典
-        self.index_to_vocab = {}
+        self.index_to_vocab = dict(zip(self.vocab_to_index.values(), self.vocab_to_index.keys()))
 
         # token_index 和 wav文件的绝对路径
         self.samples = []
@@ -100,9 +100,11 @@ class PreProcess(object):
         token_to_index = []
 
         # 文件名
-        file = file.split('.')[0]
-        if file in audio_label:
-            value = audio_label[file]
+        if file in audio_label or file.split('.')[0] in audio_label:
+            if file in audio_label:
+                value = audio_label[file]
+            elif file.split('.')[0] in audio_label:
+                value = audio_label[file.split('.')[0]]
             # 添加<eos>标记
             value = list(value.strip()) + [self.eos_flag]
 
@@ -126,6 +128,10 @@ if __name__ == '__main__':
         print('%s' % type)
         print(len(pre_process.data[type]))
 
+    pre_process.data['VOCAB'] = pre_process.vocab_to_index
+    pre_process.data['IVOCAB'] = dict(zip(pre_process.vocab_to_index.values(), pre_process.vocab_to_index.keys()))
+
+    print('VOCAB.size: %d' % len(pre_process.data['VOCAB']))
     write_pkl(data=pre_process.data, path=os.path.join(configuration[configuration['datasource_type']]['path'],
                                                        configuration[configuration['datasource_type']][
                                                            'audio_index_pkl_path']))

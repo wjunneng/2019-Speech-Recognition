@@ -1,5 +1,5 @@
 # 数据源类型  aishell_speech/libri_speech/life_speech
-datasource_type: aishell_speech
+datasource_type: life_speech
 # 模型类型
 model_type: seq2seq
 
@@ -29,6 +29,11 @@ life_speech:
             audio_label_path: dev.txt
             # audio_index_pkl_path
             audio_index_pkl_path: audio_index.pkl
+            # vocab size
+            vocab_size: 767
+
+            # 嵌入的维度
+            input_dim: 80
 
 # 中文 aishellSpeech
 aishell_speech:
@@ -109,7 +114,7 @@ seq2seq:
 
         # ############################ training config
         # number of maximum epochs
-        epochs: 1
+        epochs: 10
         # Halving learning rate when get small improvement
         half_lr: True
         # Early stop training when halving lr but still get small improvement
@@ -119,7 +124,7 @@ seq2seq:
 
         # ############################ minbatch
         # Batch size
-        batch_size: 32
+        batch_size: 2
         # Batch size is reduced if the input sequence length > ML
         maxlen_in: 800
         # Batch size is reduced if the output sequence length > ML

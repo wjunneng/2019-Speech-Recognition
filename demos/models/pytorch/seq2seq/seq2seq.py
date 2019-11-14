@@ -31,17 +31,18 @@ class Seq2Seq(nn.Module):
 
         return loss
 
-    def recognize(self, input, input_length, char_list, args):
+    def recognize(self, input, input_length, beam_size, nbest, decode_max_len):
         """
         Sequence-to-Sequence beam search, decode one utterence [发声] now.
         :param input: T x D
         :param input_length:
-        :param char_list: list of characters
-        :param args:
+        :param beam_size:
+        :param nbest:
+        :param decode_max_len:
         :return:
         """
-        encoder_outputs, _ = self.encoder(padding_input=input.unsqueeze(0),
-                                          input_length=input_length)
-        nbest_hyps = self.decoder.recognize_beam(encoder_outputs=encoder_outputs[0], char_list=char_list, args=args)
+        encoder_outputs, _ = self.encoder(padding_input=input.unsqueeze(0), input_lengths=input_length)
+        nbest_hyps = self.decoder.recognize_beam(encoder_outputs=encoder_outputs[0], beam_size=beam_size, nbest=nbest,
+                                                 decode_max_len=decode_max_len)
 
         return nbest_hyps

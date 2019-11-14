@@ -179,31 +179,32 @@ class Decoder(nn.Module):
         #     step_attn = attn[:, t, :]
         #     decode(t, step_output, step_attn)
 
-    def recognize_beam(self, encoder_outputs, char_list, args):
-        """Beam search, decode one utterence now.
-        Args:
-            encoder_outputs: T x H
-            char_list: list of character
-            args: args.beam
-        Returns:
-            nbest_hyps:
+    def recognize_beam(self, encoder_outputs, beam_size, nbest, decode_max_len):
         """
+        Beam search, decode one utterence now.
+        :param encoder_outputs:
+        :param beam_size:
+        :param nbest:
+        :param decode_max_len:
+        :return:
+        """
+
         # search params
-        beam = args.beam_size
-        nbest = args.nbest
-        if args.decode_max_len == 0:
+        beam = beam_size
+        nbest = nbest
+        if decode_max_len == 0:
             maxlen = encoder_outputs.size(0)
         else:
-            maxlen = args.decode_max_len
+            maxlen = decode_max_len
 
         # *********Init decoder rnn
-        h_list = [self.zero_state(encoder_outputs.unsqueeze(0))]
-        c_list = [self.zero_state(encoder_outputs.unsqueeze(0))]
+        h_list = [self.zero_state(encoder_outputs.unsqueeze(0), hidden_size=self.hidden_size)]
+        c_list = [self.zero_state(encoder_outputs.unsqueeze(0), hidden_size=self.hidden_size)]
         for l in range(1, self.num_layers):
-            h_list.append(self.zero_state(encoder_outputs.unsqueeze(0)))
-            c_list.append(self.zero_state(encoder_outputs.unsqueeze(0)))
-        att_c = self.zero_state(encoder_outputs.unsqueeze(0),
-                                H=encoder_outputs.unsqueeze(0).size(2))
+            h_list.append(self.zero_state(encoder_outputs.unsqueeze(0), hidden_size=self.hidden_size))
+            c_list.append(self.zero_state(encoder_outputs.unsqueeze(0), hidden_size=self.hidden_size))
+        att_c = self.zero_state(encoder_outputs.unsqueeze(0), H=encoder_outputs.unsqueeze(0).size(2),
+                                hidden_size=self.hidden_size)
         # prepare sos
         y = self.sos_id
         vy = encoder_outputs.new_zeros(1).long()

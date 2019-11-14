@@ -1,6 +1,6 @@
 import torch
 import logging
-import tqdm
+from tqdm import tqdm
 import numpy as np
 from torch.utils.data.dataloader import default_collate
 from torch.utils.tensorboard import SummaryWriter
