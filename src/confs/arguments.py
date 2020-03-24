@@ -26,4 +26,3 @@ batch_size = 6
 label_sequence_length = 64
 audio_length = 1600
 audio_feature_length = 200
-is_training = True
