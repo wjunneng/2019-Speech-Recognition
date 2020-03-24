@@ -3,7 +3,7 @@ import os
 import sys
 
 os.chdir(sys.path[0])
-from tensorflow.contrib.keras import layers, models, backend
+from tensorflow.contrib.keras import layers, models, backend, optimizers
 
 
 class CNNCTCAM(object):
@@ -11,6 +11,7 @@ class CNNCTCAM(object):
         self.OUTPUT_SIZE = args.vocab_size
         self.AUDIO_LENGTH = args.audio_length
         self.AUDIO_FEATURE_LENGTH = args.audio_length
+        self.LABEL_SEQUENCE_LENGTH = args.label_sequence_length
 
     def _cnn_init(self):
         self.input_data = layers.Input(name='the input', shape=(self.AUDIO_LENGTH, self.AUDIO_FEATURE_LENGTH, 1))
@@ -80,13 +81,16 @@ class CNNCTCAM(object):
         return models.Model(inputs=self.input_data, outputs=self.y_pred)
 
     def _ctc_init(self):
-        self.labels = layers.Input(name='the label', shape=[None], dtype='float32')
+        self.labels = layers.Input(name='the label', shape=[self.LABEL_SEQUENCE_LENGTH], dtype='float32')
         self.input_length = layers.Input(name='input length', shape=[1], dtype='int64')
         self.label_length = layers.Input(name='label length', shape=[1], dtype='int64')
         self.loss = layers.Lambda(
             backend.ctc_batch_cost(y_true=self.labels, y_pred=self.y_pred, input_length=self.input_length,
                                    label_length=self.label_length), output_shape=(1,), name='ctc')
-        return models.Model(inputs=[self.labels, self.input_data, self.input_length, self.label_length],
+        optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, decay=0.0, epsilon=10e-8)
+        self.ctc_model.compile(optimizer=optimizer, loss={'ctc': lambda y_true, y_pred: self.y_pred})
+        print('[*Info] Create Model Successful, Compiles Model Successful. ')
+        return models.Model(inputs=[self.input_data, self.labels, self.input_length, self.label_length],
                             outputs=self.loss)
 
     def build(self):
@@ -95,4 +99,5 @@ class CNNCTCAM(object):
         :return:
         """
         self.cnn_model = self._cnn_init()
+
         self.ctc_model = self._ctc_init()
