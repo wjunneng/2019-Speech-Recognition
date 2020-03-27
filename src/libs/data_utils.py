@@ -123,6 +123,7 @@ class SpeechData(object):
     def participle(self, value: bool):
         if isinstance(value, bool) is False:
             raise TypeError('{} type is error!'.format(value))
+
         self._participle = value
 
     def set_speech_data(self):
@@ -152,9 +153,13 @@ class SpeechData(object):
                 data_feature = data_feature.reshape(data_feature.shape[0], data_feature.shape[1], 1)
                 data_pinyin = np.asarray(
                     [list(self.pinyin_dict.keys()).index(i) for i in self.id_pinyin_dict[key].strip().split(' ')])
+                data_feature = data_feature[:min(data_feature.shape[0], audio_length),
+                                            :min(data_feature.shape[1], audio_feature_length), :]
                 # 关于下面这一行取整除以8 并加8的余数，在实际中如果遇到报错，可尝试只在有余数时+1，没有余数时+0，或者干脆都不加，只留整除
-                input_length.append(data_feature.shape[0] // 8 + data_feature.shape[0] % 8)
+                # input_length.append(data_feature.shape[0] // 8 + data_feature.shape[0] % 8)
+                input_length.append(data_feature.shape[0] // 8)
 
+                data_pinyin = data_pinyin[:min(data_pinyin.shape[0], label_sequence_length)]
                 X[i, 0:len(data_feature)] = data_feature
                 y[i, 0:len(data_pinyin)] = data_pinyin
                 label_length.append([len(data_pinyin)])
@@ -162,7 +167,6 @@ class SpeechData(object):
             label_length = np.array(label_length)
             input_length = np.array([input_length]).T
 
-            print(X.shape, y.shape, input_length.shape, label_length.shape)
             yield [X, y, input_length, label_length], labels
 
 # if __name__ == '__main__':

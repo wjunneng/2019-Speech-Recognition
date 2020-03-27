@@ -13,7 +13,15 @@ class CNNCTCAM(object):
         self.AUDIO_FEATURE_LENGTH = args.audio_feature_length
         self.LABEL_SEQUENCE_LENGTH = args.label_sequence_length
 
-    def _cnn_init(self):
+    def _ctc_lambda_func(self, args):
+        y_pred, labels, input_length, label_length = args
+
+        y_pred = y_pred[:, :, :]
+
+        return backend.ctc_batch_cost(y_true=labels, y_pred=y_pred, input_length=input_length,
+                                      label_length=label_length)
+
+    def _cnn_ctc_init(self):
         self.input_data = layers.Input(name='the_input', shape=(self.AUDIO_LENGTH, self.AUDIO_FEATURE_LENGTH, 1))
 
         layers_h1 = layers.Conv2D(filters=32, kernel_size=(3, 3), use_bias=False, activation='relu', padding='same',
@@ -66,51 +74,43 @@ class CNNCTCAM(object):
 
         layers_h15 = layers.MaxPooling2D(pool_size=1, strides=None, padding='valid')(layers_h14)
 
-        layers_h16 = layers.Reshape((self.AUDIO_FEATURE_LENGTH, self.AUDIO_LENGTH))(layers_h15)
+        layers_h16 = layers.Reshape((self.AUDIO_FEATURE_LENGTH, self.AUDIO_LENGTH * 2))(layers_h15)
         layers_h16 = layers.Dropout(rate=0.3)(layers_h16)
 
         layers_h17 = layers.Dense(units=128, use_bias=True, activation='relu', kernel_initializer='he_normal')(
             layers_h16)
         layers_h17 = layers.Dropout(rate=0.3)(layers_h17)
 
-        layers_h18 = layers.Dense(units=self.OUTPUT_SIZE, use_bias=True, activation='relu',
-                                  kernel_initializer='he_normal')(layers_h17)
+        layers_h18 = layers.Dense(units=self.OUTPUT_SIZE, use_bias=True, kernel_initializer='he_normal')(layers_h17)
 
-        self.y_pred = layers.Activation('softmax', name='Activation0')(layers_h18)
+        y_pred = layers.Activation('softmax', name='activation_0')(layers_h18)
 
-        return models.Model(inputs=self.input_data, outputs=self.y_pred)
+        self.cnn_model = models.Model(inputs=self.input_data, outputs=y_pred)
 
-    def _ctc_lambda_func(self, args):
-        y_pred, labels, input_length, label_length = args
-
-        y_pred = y_pred[:, :, :]
-
-        return backend.ctc_batch_cost(labels, y_pred, input_length, label_length)
-
-    def _ctc_init(self):
         self.labels = layers.Input(name='the_label', shape=[self.LABEL_SEQUENCE_LENGTH], dtype='float32')
         self.input_length = layers.Input(name='input_length', shape=[1], dtype='int64')
         self.label_length = layers.Input(name='label_length', shape=[1], dtype='int64')
-        self.loss = layers.Lambda(function=self._ctc_lambda_func, output_shape=(1,), name='ctc')([self.y_pred,
+        self.loss = layers.Lambda(function=self._ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred,
                                                                                                   self.labels,
                                                                                                   self.input_length,
                                                                                                   self.label_length])
 
         self.ctc_model = models.Model(inputs=[self.input_data, self.labels, self.input_length, self.label_length],
                                       outputs=self.loss)
-        optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, decay=0.0, epsilon=10e-8)
-        self.ctc_model.compile(optimizer=optimizer, loss={'ctc': lambda y_true, y_pred: self.y_pred})
+        optimizer = optimizers.Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, decay=0.0, epsilon=10e-8)
+        self.ctc_model.compile(optimizer=optimizer, loss={'ctc': lambda y_true, y_pred: y_pred})
         print('[*Info] Create Model Successful, Compiles Model Successful. ')
 
-        return self.ctc_model
+        return self.cnn_model, self.ctc_model
 
     def build(self):
         """
         构建CNN + CTC模型
         :return:
         """
-        self.cnn_model = self._cnn_init()
+        self.cnn_model, self.ctc_model = self._cnn_ctc_init()
 
-        self.ctc_model = self._ctc_init()
+        print(self.cnn_model.summary())
+        print(self.ctc_model.summary())
 
         return self.cnn_model, self.ctc_model

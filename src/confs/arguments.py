@@ -20,11 +20,11 @@ LIBS_DIR = SRC_DIR.joinpath('libs')
 DICT_TXT_PATH = DATASETS_DIR.joinpath('dict.txt')
 
 # 声学模型 am
-lr = 0.0008
+# lr = 0.0008
 vocab_size = 1426
 batch_size = 4
-epoch = 10
-save_step = 5
+epoch = 50
+save_step = 100
 label_sequence_length = 64
 audio_length = 1600
 audio_feature_length = 200
