@@ -19,7 +19,7 @@ class AM(object):
     def train(self):
         self.SpeechData.participle = self.args.PARTICIPLE
 
-        train_dev_generator = self.SpeechData.data_generator(use_type=['dev', 'train'],
+        train_dev_generator = self.SpeechData.data_generator(use_type=['train', 'dev'],
                                                              batch_size=self.args.batch_size,
                                                              label_sequence_length=self.args.label_sequence_length,
                                                              audio_length=self.args.audio_length,

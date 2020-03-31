@@ -48,6 +48,73 @@ class DataUtils(object):
 
         return leven_cost
 
+    @staticmethod
+    def get_lm(path):
+        """
+        读取语言模型的文件
+        返回读取后的模型
+        """
+        # 初始化符号字典
+        dic_model = {}
+        # 打开文件并读入
+        with open(path, 'r', encoding='utf-8') as file:
+            txt_lines = file.readlines()
+
+            for line in txt_lines:
+                if line != '':
+                    txt_l = line.split('\t')
+                    if len(txt_l) == 1:
+                        continue
+                    dic_model[txt_l[0]] = txt_l[1]
+
+        return dic_model
+
+    @staticmethod
+    def get_lm_pinyin(path):
+        """
+        获取语言模型字典
+        :param path:
+        :return:
+        """
+        dic = {}
+
+        # 打开文件并读入
+        with open(path, 'r', encoding='utf-8') as file:
+            txt_lines = file.readlines()
+
+            for line in txt_lines:
+                if line == '':
+                    continue
+                pinyin_split = line.split('\t')
+                list_pinyin = pinyin_split[0]
+                if list_pinyin not in dic and int(pinyin_split[1]) > 1:
+                    dic[list_pinyin] = pinyin_split[1]
+        return dic
+
+    @staticmethod
+    def get_symbol_dict(path):
+        """
+        读取拼音汉字的字典文件
+        返回读取后的字典
+        """
+        dic = {}
+
+        # 打开文件并读入
+        with open(path, 'r', encoding='utf-8') as file:
+            txt_lines = file.readlines()
+
+            for line in txt_lines:
+                # 初始化符号列表
+                list_symbol = []
+                pinyin = ''
+                if line != '':
+                    txt_l = line.split('\t')
+                    pinyin = txt_l[0]
+                    for word in txt_l[1]:
+                        list_symbol.append(word)
+                dic[pinyin] = list_symbol
+        return dic
+
 
 class MyConverter(NeutralToneWith5Mixin, DefaultConverter):
     pass
