@@ -46,8 +46,6 @@ class ModelUtils(object):
                 words_n = data_pinyin.shape[0]
                 # 把句子的总字数加上
                 words_num += words_n
-                print(data_pinyin)
-                print(predict_pinyin)
                 # 获取编辑距离
                 edit_distance = DataUtils.get_edit_distance(data_pinyin, predict_pinyin)
                 # 当编辑距离小于等于句子字数时
@@ -58,6 +56,8 @@ class ModelUtils(object):
                     # 否则肯定是增加了一堆乱七八糟的奇奇怪怪的字, 就直接加句子本来的总字数就好了
                     word_error_num += words_n
 
+            print(data_pinyin)
+            print(predict_pinyin)
             print('*[测试结果] 语音识别 ' + '集语音单字错误率：', word_error_num / words_num * 100, '%')
             print('*[Test Result] Speech Recognition ' + ' set word error ratio: ', word_error_num / words_num * 100,
                   '%')
