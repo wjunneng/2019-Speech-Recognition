@@ -3,9 +3,6 @@ import os
 import sys
 
 os.chdir(sys.path[0])
-
-from src.cores.cnn_ctc_am import CNNCTCAM
-from src.cores.gru_ctc_am import GRUCTCAM
 from src.confs import arguments
 from src.libs.data_utils import SpeechData
 from src.libs.model_utils import ModelUtils
@@ -14,9 +11,17 @@ from src.libs.model_utils import ModelUtils
 class AM(object):
     def __init__(self, args):
         self.args = args
-        # self.cnn_model, self.ctc_model = CNNCTCAM(self.args).build()
-        self.gru_model, self.ctc_model = GRUCTCAM(self.args).build()
+        self.nn_type = 'cnn'
         self.SpeechData = SpeechData(args=self.args)
+
+        if self.nn_type == 'cnn':
+            from src.cores.cnn_ctc_am import CNNCTCAM
+
+            self.a_model, self.m_model = CNNCTCAM(self.args).build()
+        elif self.nn_type == 'gru':
+            from src.cores.gru_ctc_am import GRUCTCAM
+
+            self.a_model, self.m_model = GRUCTCAM(self.args).build()
 
     def train(self):
         self.SpeechData.participle = self.args.PARTICIPLE
@@ -30,38 +35,19 @@ class AM(object):
         # 迭代轮数
         for epoch in range(self.args.epoch):
             print('>>> epoch: {}'.format(epoch))
-            self.ctc_model.fit_generator(generator=train_dev_generator, steps_per_epoch=self.args.save_step)
+            self.m_model.fit_generator(generator=train_dev_generator, steps_per_epoch=self.args.save_step)
 
             self.SpeechData.use_type = 'train'
 
-            # if (epoch + 1) % 50 == 0:
-            #     ModelUtils.model_evaluate(cnn_model=self.cnn_model,
-            #                               speech_data=self.SpeechData,
-            #                               audio_length=self.args.audio_length,
-            #                               audio_feature_length=self.args.audio_feature_length,
-            #                               label_sequence_length=self.args.label_sequence_length)
-            #
-            #     self.SpeechData.use_type = 'dev'
-            #     ModelUtils.model_evaluate(cnn_model=self.cnn_model,
-            #                               speech_data=self.SpeechData,
-            #                               audio_length=self.args.audio_length,
-            #                               audio_feature_length=self.args.audio_feature_length,
-            #                               label_sequence_length=self.args.label_sequence_length)
-            #
-            #     if os.path.exists(self.args.AM_DIR) is False:
-            #         os.makedirs(self.args.AM_DIR)
-            #     self.cnn_model.save(filepath=self.args.AM_DIR.joinpath('cnn_' + str(epoch) + '.h5'))
-            #     self.ctc_model.save(filepath=self.args.AM_DIR.joinpath('cnn_ctc_' + str(epoch) + '.h5'))
-
             if (epoch + 1) % 50 == 0:
-                ModelUtils.model_evaluate(cnn_model=self.gru_model,
+                ModelUtils.model_evaluate(cnn_model=self.a_model,
                                           speech_data=self.SpeechData,
                                           audio_length=self.args.audio_length,
                                           audio_feature_length=self.args.audio_feature_length,
                                           label_sequence_length=self.args.label_sequence_length)
 
                 self.SpeechData.use_type = 'dev'
-                ModelUtils.model_evaluate(cnn_model=self.gru_model,
+                ModelUtils.model_evaluate(cnn_model=self.a_model,
                                           speech_data=self.SpeechData,
                                           audio_length=self.args.audio_length,
                                           audio_feature_length=self.args.audio_feature_length,
@@ -69,8 +55,9 @@ class AM(object):
 
                 if os.path.exists(self.args.AM_DIR) is False:
                     os.makedirs(self.args.AM_DIR)
-                self.gru_model.save(filepath=self.args.AM_DIR.joinpath('gru_' + str(epoch) + '.h5'))
-                self.ctc_model.save(filepath=self.args.AM_DIR.joinpath('gru_ctc_' + str(epoch) + '.h5'))
+                self.a_model.save(filepath=self.args.AM_DIR.joinpath(self.nn_type + '_' + str(epoch) + '.h5'))
+                self.m_model.save(
+                    filepath=self.args.AM_DIR.joinpath(self.nn_type + '_' + 'ctc_' + str(epoch) + '.h5'))
 
 
 if __name__ == '__main__':

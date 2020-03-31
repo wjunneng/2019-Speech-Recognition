@@ -7,8 +7,9 @@ from pathlib import Path
 
 assert sys.platform.lower() == 'linux'
 
-PWD = '/'.join(os.getenv('PWD').split('/')[:-2])
+PWD = '/'.join(os.getenv('PWD').split('/')[:-1])
 
+print('pwd: {}'.format(PWD))
 PROJECT_DIR = Path(PWD)
 DATASETS_DIR = PROJECT_DIR.joinpath('datasets')
 MODELS_DIR = PROJECT_DIR.joinpath('models')
@@ -20,11 +21,14 @@ LIBS_DIR = SRC_DIR.joinpath('libs')
 
 # 字典的路径
 DICT_TXT_PATH = DATASETS_DIR.joinpath('dict.txt')
+LM_1_PATH = DATASETS_DIR.joinpath('lm_1.txt')
+LM_2_PATH = DATASETS_DIR.joinpath('lm_2.txt')
+DICT_PINYIN_PATH = DATASETS_DIR.joinpath('dict_pinyin.txt')
 
 # 声学模型 am
-# lr = 0.0008
+nn_type = 'cnn'
 vocab_size = 1426
-batch_size = 4
+batch_size = 5
 epoch = 1000
 save_step = 900 / 5
 label_sequence_length = 64

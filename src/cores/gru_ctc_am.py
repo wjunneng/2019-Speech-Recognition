@@ -24,10 +24,10 @@ class GRUCTCAM(object):
     @staticmethod
     def _bi_gru(units, x):
         x = layers.Dropout(0.2)(x)
-        y1 = layers.GRU(units, return_sequences=True,
-                        kernel_initializer='he_normal')(x)
-        y2 = layers.GRU(units, return_sequences=True, go_backwards=True,
-                        kernel_initializer='he_normal')(x)
+        y1 = layers.GRU(units, return_sequences=True, kernel_initializer='he_normal',
+                        recurrent_initializer='orthogonal')(x)
+        y2 = layers.GRU(units, return_sequences=True, go_backwards=True, kernel_initializer='he_normal',
+                        recurrent_initializer='orthogonal')(x)
         y = layers.add([y1, y2])
         return y
 
@@ -42,7 +42,7 @@ class GRUCTCAM(object):
         self.input_data = layers.Input(name='the_input', shape=(self.AUDIO_LENGTH, self.AUDIO_FEATURE_LENGTH, 1))
         layers_h1 = layers.Reshape((-1, 200))(self.input_data)
         layers_h2 = GRUCTCAM._dense(128, layers_h1)
-        layers_h3 = GRUCTCAM._bi_gru(128, layers_h2)
+        layers_h3 = GRUCTCAM._bi_gru(64, layers_h2)
         y_pred = GRUCTCAM._dense(self.OUTPUT_SIZE, layers_h3, activation='softmax')
 
         self.gru_model = models.Model(inputs=self.input_data, outputs=y_pred)

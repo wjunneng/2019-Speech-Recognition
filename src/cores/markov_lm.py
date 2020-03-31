@@ -11,13 +11,12 @@ from src.libs.data_utils import DataUtils
 class MARKOVLM(object):
     def __init__(self, args):
         self.args = args
-        self.modelpath = self.args.modelpath
 
     def load_model(self):
         self.dict_pinyin = DataUtils.get_pinyin_dict()
-        self.model1 = DataUtils.get_lm(self.modelpath + 'language_model1.txt')
-        self.model2 = DataUtils.get_lm(self.modelpath + 'language_model2.txt')
-        self.pinyin = DataUtils.get_lm_pinyin(self.modelpath + 'dic_pinyin.txt')
+        self.model1 = DataUtils.get_lm(self.args.LM_1_PATH)
+        self.model2 = DataUtils.get_lm(self.args.LM_2_PATH)
+        self.pinyin = DataUtils.get_lm_pinyin(self.args.DICT_PINYIN_PATH)
 
         return self.dict_pinyin, self.model1, self.model2
 
@@ -134,5 +133,3 @@ class MARKOVLM(object):
                     list_words[j] = tmp
 
         return list_words
-
-
