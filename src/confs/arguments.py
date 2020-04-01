@@ -25,16 +25,7 @@ LM_1_PATH = DATASETS_DIR.joinpath('lm_1.txt')
 LM_2_PATH = DATASETS_DIR.joinpath('lm_2.txt')
 DICT_PINYIN_PATH = DATASETS_DIR.joinpath('dict_pinyin.txt')
 
-# 声学模型 am
-nn_type = 'cnn'
-vocab_size = 1426
-batch_size = 5
-epoch = 1000
-save_step = 900 / 5
-label_sequence_length = 64
-audio_length = 1600
-audio_feature_length = 200
-
+# 数据集
 DATA_TYPE = 'AISHELL'
 
 if DATA_TYPE == 'AISHELL':
@@ -48,3 +39,26 @@ elif DATA_TYPE == 'ST-CMDS':
 elif DATA_TYPE == 'THCHS-30':
     DATASET_DIR = DATASETS_DIR.joinpath('THCHS-30')
     PARTICIPLE = False
+
+# 声学模型 am
+am_nn_type = 'cnn'
+am_vocab_size = 1426
+am_batch_size = 5
+am_epoch = 1000
+am_save_step = 900 / 5
+am_label_sequence_length = 64
+am_audio_length = 1600
+am_audio_feature_length = 200
+
+# 语言模型 lm
+lm_feature_dim = 200
+lm_epochs = 100
+lm_batch_size = 1
+lm_num_heads = 8
+lm_num_blocks = 6
+lm_position_max_length = 100
+lm_hidden_units = 512
+lm_lr = 0.0003
+lm_dropout_rate = 0.2
+lm_is_training = True
+lm_count = 5000

@@ -8,10 +8,10 @@ from tensorflow.contrib.keras import layers, models, backend, optimizers
 
 class CNNCTCAM(object):
     def __init__(self, args):
-        self.OUTPUT_SIZE = args.vocab_size
-        self.AUDIO_LENGTH = args.audio_length
-        self.AUDIO_FEATURE_LENGTH = args.audio_feature_length
-        self.LABEL_SEQUENCE_LENGTH = args.label_sequence_length
+        self.OUTPUT_SIZE = args.am_vocab_size
+        self.AUDIO_LENGTH = args.am_audio_length
+        self.AUDIO_FEATURE_LENGTH = args.am_audio_feature_length
+        self.LABEL_SEQUENCE_LENGTH = args.am_label_sequence_length
 
     def _ctc_lambda_func(self, args):
         y_pred, labels, input_length, label_length = args
